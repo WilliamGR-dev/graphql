@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model journey {
+  id    Int     @id @default(autoincrement())
+  name  String?
+  matters matters[]
+}
+
+model matters {
+  id        Int     @id @default(autoincrement())
+  name     String
+  journey_id Int
+  journey journey  @relation(fields: [journey_id], references: [id], onDelete: Cascade)
+}
+
+model lesson {
+  id        Int     @id @default(autoincrement())
+  name     String
+  start_at     String
+  end_at     String
+}
+
+model classes {
+  id        Int     @id @default(autoincrement())
+  name     String
+  students students[]
+}
+model students {
+  id        Int     @id @default(autoincrement())
+  name     String
+  grades grade[]
+  classe_id Int
+  classes classes  @relation(fields: [classe_id], references: [id], onDelete: Cascade)
+}
+model grade {
+  id        Int     @id @default(autoincrement())
+  student_id   Int
+  students     students   @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  name     String
+  matter_id   Int
+  matters     matters   @relation(fields: [matter_id], references: [id], onDelete: Cascade)
+}
+model trainers {
+  id        Int     @id @default(autoincrement())
+  name     String
+}
