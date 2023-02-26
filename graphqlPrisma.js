@@ -13,7 +13,7 @@ const prisma = `
         name: String
         students: Students
         matters_id: Int
-        matters: matters
+        matters: Matters
     }
     
     type Journey {
