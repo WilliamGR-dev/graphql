@@ -19,7 +19,10 @@ let schema = buildSchema(graphqlPrisma)
 let root = {
     getStudents: async () => {
         return await prisma.students.findMany({
-            inc
+            include: {
+                grade: true,
+                classes: true,
+            }
         })
     },
     getStudentsById: async ({id}) => {
@@ -28,14 +31,22 @@ let root = {
             where: {
                 id: id
             },
+            include: {
+                grade: true,
+                classes: true,
+            }
         });
     },
-    addStudents: async ({name}) => {
+    addStudents: async ({name, classe_id}) => {
         return await prisma.students.create({
             data: {
                 name,
+                classes: {
+                    connect: { id: classe_id }
+                }
             },
-            include: {grade: true}
+            include: {grade: true,
+                classes: true,}
         });
     },
     removeStudents: async ({id}) => {
@@ -43,24 +54,35 @@ let root = {
             where: {
                 id: id
             },
+            include: {
+                grade: true,
+                classes: true,
+            }
         });
     },
-    editStudents: async ({id, name}) => {
+    editStudents: async ({id, name, classe_id}) => {
         return await prisma.students.create({
             where: {
                 id
             },
             data: {
                 name,
+                classes: {
+                    connect: { id: classe_id }
+                }
             },
-            include: {grade: true}
+            include: {grade: true,
+                classes: true,}
         });
     },
 
 
     getGrade: async () => {
         return await prisma.grade.findMany({
-            inc
+            include: {
+                students: true,
+                matters: true,
+            }
         })
     },
     getGradeById: async ({id}) => {
@@ -69,15 +91,25 @@ let root = {
             where: {
                 id: id
             },
+            include: {
+                students: true,
+                matters: true,
+            }
         });
     },
-    addGrade: async ({name, student_id}) => {
+    addGrade: async ({name, student_id, matter_id}) => {
         return await prisma.grade.create({
             data: {
                 name,
-                student_id,
+                students: {
+                    connect: { id: student_id }
+                },
+                matters: {
+                    connect: { id: matter_id }
+                }
             },
-            include: {students: true}
+            include: {students: true,
+                matters: true,}
         });
     },
     removeGrade: async ({id}) => {
@@ -85,25 +117,37 @@ let root = {
             where: {
                 id: id
             },
+            include: {
+                students: true,
+                matters: true,
+            }
         });
     },
-    editGrade: async ({id, name, student_id}) => {
+    editGrade: async ({id, name, student_id, matter_id}) => {
         return await prisma.grade.create({
             where: {
                 id
             },
             data: {
                 name,
-                student_id,
+                students: {
+                    connect: { id: student_id }
+                },
+                matters: {
+                    connect: { id: matter_id }
+                }
             },
-            include: {students: true}
+            include: {students: true,
+                matters: true,}
         });
     },
 
 
     getJourney: async () => {
         return await prisma.journey.findMany({
-            inc
+            include: {
+                matters: true,
+            }
         })
     },
     getJourneyById: async ({id}) => {
@@ -112,6 +156,9 @@ let root = {
             where: {
                 id: id
             },
+            include: {
+                matters: true,
+            }
         });
     },
     addJourney: async ({name}) => {
@@ -119,7 +166,9 @@ let root = {
             data: {
                 name,
             },
-            include: {matters: true}
+            include: {
+                matters: true,
+            }
         });
     },
     removeJourney: async ({id}) => {
@@ -127,6 +176,9 @@ let root = {
             where: {
                 id: id
             },
+            include: {
+                matters: true,
+            }
         });
     },
     editJourney: async ({id, name}) => {
@@ -137,13 +189,19 @@ let root = {
             data: {
                 name,
             },
-            include: {matters: true}
+            include: {
+                matters: true,
+            }
         });
     },
 
     getMatters: async () => {
         return await prisma.matters.findMany({
-            inc
+            include: {
+                grade: true,
+                journey: true,
+                lesson: true,
+            }
         })
     },
     getMattersById: async ({id}) => {
@@ -151,18 +209,26 @@ let root = {
             where: {
                 id: id
             },
+            include: {
+                grade: true,
+                journey: true,
+                lesson: true,
+            }
         });
     },
     addMatter: async ({name, journey_id}) => {
         return await prisma.matters.create({
-            where: {
-                id
-            },
             data: {
                 name,
-                journey_id: journey_id
+                journey: {
+                    connect: { id: journey_id }
+                },
             },
-            include: {journey: true}
+            include: {
+                grade: true,
+                journey: true,
+                lesson: true,
+            }
         });
     },
     removeMatter: async ({id}) => {
@@ -170,24 +236,39 @@ let root = {
             where: {
                 id: id
             },
+            include: {
+                grade: true,
+                journey: true,
+                lesson: true,
+            }
         });
     },
-    editMatter: async ({id, name}) => {
+    editMatter: async ({id, name, start_at, end_at, journey_id}) => {
         return await prisma.matters.create({
             where: {
                 id
             },
             data: {
                 name,
-                journey_id: journey_id
+                start_at,
+                end_at,
+                journey: {
+                    connect: { id: journey_id }
+                },
             },
-            include: {journey: true}
+            include: {
+                grade: true,
+                journey: true,
+                lesson: true,
+            }
         });
     },
 
     getLesson: async () => {
         return await prisma.lesson.findMany({
-            inc
+            include: {
+                matters: true,
+            }
         })
     },
     getLessonById: async ({id}) => {
@@ -196,15 +277,24 @@ let root = {
             where: {
                 id: id
             },
+            include: {
+                matters: true,
+            }
         });
     },
-    addLesson: async ({name, start_at, end_at}) => {
+    addLesson: async ({name, start_at, end_at, matter_id}) => {
         return await prisma.lesson.create({
             data: {
                 name,
                 start_at,
                 end_at,
+                matters: {
+                    connect: { id: matter_id }
+                },
             },
+            include: {
+                matters: true,
+            }
         });
     },
     removeLesson: async ({id}) => {
@@ -212,9 +302,12 @@ let root = {
             where: {
                 id: id
             },
+            include: {
+                matters: true,
+            }
         });
     },
-    editLesson: async ({id, name, start_at, end_at,}) => {
+    editLesson: async ({id, name, start_at, end_at, matter_id}) => {
         return await prisma.lesson.create({
             where: {
                 id
@@ -223,13 +316,21 @@ let root = {
                 name,
                 start_at,
                 end_at,
+                matters: {
+                    connect: { id: matter_id }
+                },
             },
+            include: {
+                matters: true,
+            }
         });
     },
 
     getClasses: async () => {
         return await prisma.classes.findMany({
-            inc
+            include: {
+                students: true,
+            }
         })
     },
     getClassesById: async ({id}) => {
@@ -238,6 +339,9 @@ let root = {
             where: {
                 id: id
             },
+            include: {
+                students: true,
+            }
         });
     },
     addClasses: async ({name}) => {
@@ -245,7 +349,9 @@ let root = {
             data: {
                 name,
             },
-            include: {students: true}
+            include: {
+                students: true,
+            }
         });
     },
     removeClasses: async ({id}) => {
@@ -253,6 +359,9 @@ let root = {
             where: {
                 id: id
             },
+            include: {
+                students: true,
+            }
         });
     },
     editClasses: async ({id, name}) => {
@@ -263,14 +372,15 @@ let root = {
             data: {
                 name,
             },
-            include: {students: true}
+            include: {
+                students: true,
+            }
         });
     },
 
 
     getTrainers: async () => {
         return await prisma.trainers.findMany({
-            inc
         })
     },
     getTrainersById: async ({id}) => {
@@ -281,10 +391,13 @@ let root = {
             },
         });
     },
-    addTrainers: async ({name}) => {
+    addTrainers: async ({name, classes_id}) => {
         return await prisma.trainers.create({
             data: {
                 name,
+                classes: {
+                    connect: { id: classes_id }
+                },
             },
         });
     },
@@ -295,13 +408,16 @@ let root = {
             },
         });
     },
-    editTrainers: async ({id, name}) => {
+    editTrainers: async ({id, name, classes_id}) => {
         return await prisma.trainers.create({
             where: {
                 id
             },
             data: {
                 name,
+                classes: {
+                    connect: { id: classes_id }
+                },
             },
         });
     },

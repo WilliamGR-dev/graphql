@@ -2,7 +2,9 @@ const prisma = `
     type Students {
         id: ID!
         name: String!
-        grade: Grade
+        grade: [Grade]
+        classe_id: Int
+        classes: Classes!
     }
     
     type Grade {
@@ -10,6 +12,8 @@ const prisma = `
         student_id: Int
         name: String
         students: Students
+        matters_id: Int
+        matters: matters
     }
     
     type Journey {
@@ -22,23 +26,32 @@ const prisma = `
         id: Int
         name: String
         journey_id: Int
-        journey: Journey
+        journey: Journey!
+        grade: [Grade]
+        lesson: [Lesson]
     }
     
     type Lesson {
         id: Int
         name: String
+        start_at: String
+        end_at: String
+        matter_id: Int
+        matter: Matters!
     }
 
     type Classes {
         id: Int
         name: String
         students: [Students]
+        trainers: [Trainers]
     }
 
     type Trainers {
         id: Int
         name: String
+        classe_id: Int
+        classes: [Classes]
     }
 
     type Query{
@@ -66,34 +79,34 @@ const prisma = `
     }
 
     type Mutation {
-        addStudents(name: String): [Students]
+        addStudents(name: String,classe_id: ID!): [Students]
         removeStudents(id: Int): [Students]
-        editStudents(id: Int, name: String): [Students]
+        editStudents(id: Int, name: String,classe_id: ID!): [Students]
 
-        addGrade(name: String, student_id: Int): [Grade]
+        addGrade(name: String, student_id: Int, classe_id: Int): [Grade]
         removeGrade(id: Int): [Grade]
-        editGrade(id: Int, name: String, student_id: Int): [Grade]
+        editGrade(id: Int, name: String, student_id: Int, classe_id: Int): [Grade]
         
         
         addJourney(name: String): [Journey]
         removeJourney(id: Int): [Journey]
         editJourney(id: Int, name: String): [Journey]
         
-        addMatter(name: String): [Matters]
+        addMatter(name: String, journey_id: Int): [Matters]
         removeMatter(id: Int): [Matters]
-        editMatter(id: Int, name: String): [Matters]
+        editMatter(id: Int, name: String, journey_id: Int): [Matters]
         
-        addLesson(name: String, start_at: String, end_at: String): [Lesson]
+        addLesson(name: String, start_at: String, end_at: String, matter_id: Int): [Lesson]
         removeLesson(id: Int): [Lesson]
-        editLesson(id: Int, name: String, start_at: String, end_at: String): [Lesson]
+        editLesson(id: Int, name: String, start_at: String, end_at: String, matter_id: Int): [Lesson]
         
         addClasses(name: String): [Classes]
         removeClasses(id: Int): [Classes]
         editClasses(id: Int, name: String): [Classes]
         
-        addTrainers(name: String): [Trainers]
+        addTrainers(name: String, classe_id: Int): [Trainers]
         removeTrainers(id: Int): [Trainers]
-        editTrainers(id: Int, name: String): [Trainers]
+        editTrainers(id: Int, name: String, classe_id: Int): [Trainers]
     }
 `
 

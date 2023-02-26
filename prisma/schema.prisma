@@ -21,6 +21,8 @@ model matters {
   name     String
   journey_id Int
   journey journey  @relation(fields: [journey_id], references: [id], onDelete: Cascade)
+  grade grade[]
+  lesson lesson[]
 }
 
 model lesson {
@@ -28,19 +30,22 @@ model lesson {
   name     String
   start_at     String
   end_at     String
+  matter_id   Int
+  matters     matters   @relation(fields: [matter_id], references: [id], onDelete: Cascade)
 }
 
 model classes {
   id        Int     @id @default(autoincrement())
   name     String
   students students[]
+  trainers trainers[]
 }
 model students {
   id        Int     @id @default(autoincrement())
   name     String
   grades grade[]
   classe_id Int
-  classes classes  @relation(fields: [classe_id], references: [id], onDelete: Cascade)
+  classes classes  @relation(fields: [classe_id], references: [id], onDelete: SetNull)
 }
 model grade {
   id        Int     @id @default(autoincrement())
@@ -53,4 +58,6 @@ model grade {
 model trainers {
   id        Int     @id @default(autoincrement())
   name     String
+  classe_id   Int
+  classes     classes   @relation(fields: [classe_id], references: [id], onDelete: Cascade)
 }
